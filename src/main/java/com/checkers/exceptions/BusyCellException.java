@@ -1,2 +1,4 @@
-package com.checkers.exceptions;public class BusyCellException {
+package com.checkers.exceptions;
+
+public class BusyCellException extends  Exception{
 }

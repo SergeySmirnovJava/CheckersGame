@@ -1,2 +1,4 @@
-package com.checkers.exceptions;public class InvaliMoveException {
+package com.checkers.exceptions;
+
+public class InvaliMoveException extends Exception{
 }
