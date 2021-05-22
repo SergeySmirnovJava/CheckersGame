@@ -7,9 +7,10 @@ public class SyntaxValidator extends Handler{
 
 
     @Override
-    public String handleMove(String moves) throws ErrorException {
+    public String handleMove(String moves) throws Exception {
         if(moves.matches(syntaxPattern)){
-            return moves;
+            System.out.println("move");
+            return handleNext(moves);
         }
         else {
             throw new ErrorException("Syntax error");

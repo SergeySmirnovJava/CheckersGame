@@ -12,9 +12,12 @@ public abstract class Handler {
 
     public abstract String handleMove(String moves) throws Exception;
 
-    public void handleNext(String moves) throws Exception {
+    public String handleNext(String moves) throws Exception {
         if(nextHandler != null) {
-            nextHandler.handleMove(moves);
+            return nextHandler.handleMove(moves);
+        }
+        else {
+            throw new ErrorException("Null");
         }
     }
 }
