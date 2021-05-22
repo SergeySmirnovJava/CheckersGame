@@ -1,4 +1,7 @@
 package com.checkers.exceptions;
 
-public class InvaliMoveException extends Exception{
+public class InvalidMoveException extends Exception{
+    public InvalidMoveException(){
+        super("invalid move");
+    }
 }
