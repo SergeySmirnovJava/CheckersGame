@@ -18,7 +18,7 @@ public class RegularChecker  extends Checker{
 
     @Override
     int getNeighbours(String nextCell) throws BusyCellException, InvalidMoveException {
-        int localArea = nextCell.hashCode() - currentCell.hashCode();
+        int localArea = Math.abs(nextCell.toLowerCase().hashCode() - currentCell.toLowerCase().hashCode());
         if(localArea == 30  || localArea == 32 ){
             return localArea;
         }

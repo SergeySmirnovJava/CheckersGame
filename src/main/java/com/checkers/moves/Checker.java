@@ -16,15 +16,14 @@ public abstract class Checker {
         this.currentCheckers = currentCheckers;
         this.oppositeCheckers = oppositeCheckers;
         this.currentCell = currentCell;
-        queenSide = side ? 1 : 8;
+        queenSide = side ? 8 : 1;
     }
 
-
-    public int getSide(){
-        return queenSide;
-    }
     public String regularMove(String nextCell) throws WhiteCellException, BusyCellException,
                                                         InvalidMoveException, ErrorException {
+        checkRegularMoves(nextCell);
+        System.out.println(currentCell);
+        System.out.println(nextCell);
         int step = getNeighbours(nextCell);
         currentCheckers.set(currentCheckers.indexOf(currentCell), nextCell);
         return nextCell;
@@ -49,22 +48,6 @@ public abstract class Checker {
     }
 
     abstract int getNeighbours(String nextCell) throws BusyCellException, InvalidMoveException;
-   // public int getLocalNeighbours(String nextCell) throws BusyCellException, InvalidMoveException, WhiteCellException, ErrorException {
-    /*    System.out.println(currentCell);
-        System.out.println(nextCell);
-        if(currentCheckers.contains(nextCell)) throw new BusyCellException();
-        if(oppositeCheckers.contains(nextCell)) throw new InvalidMoveException();
-        int localArea = nextCell.hashCode() - currentCell.hashCode();
-        if(localArea < -700) throw new ErrorException("Wrong cast"); // todo think about checking case
-        System.out.println(localArea);
-        if((localArea % 30 == 0) || (localArea % 32) == 0){
-            return localArea;
-        }
-        else {
-            throw new WhiteCellException();
-        }*/
-
-   // }
 
     abstract String getNextMove(String nextCell) throws WhiteCellException, BusyCellException, ErrorException, InvalidMoveException;
     abstract String getOppositeChecker(String nextCell, int step) throws InvalidMoveException, ErrorException;
