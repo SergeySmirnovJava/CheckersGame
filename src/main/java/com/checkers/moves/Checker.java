@@ -4,7 +4,10 @@ import com.checkers.exceptions.BusyCellException;
 import com.checkers.exceptions.ErrorException;
 import com.checkers.exceptions.InvalidMoveException;
 import com.checkers.exceptions.WhiteCellException;
+
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Checker {
     List<String> currentCheckers;
@@ -13,8 +16,9 @@ public abstract class Checker {
     int queenSide;
     public Checker(List<String> currentCheckers, List<String> oppositeCheckers, String currentCell, boolean side){
 
-        this.currentCheckers = currentCheckers;
-        this.oppositeCheckers = oppositeCheckers;
+
+        //currentCheckers.forEach(s-> this.currentCheckers.put(s.hashCode(), s));
+        //oppositeCheckers.forEach(s-> this.oppositeCheckers.put(s.hashCode(),s));
         this.currentCell = currentCell;
         queenSide = side ? 8 : 1;
     }
@@ -25,6 +29,7 @@ public abstract class Checker {
         System.out.println(currentCell);
         System.out.println(nextCell);
         int step = getNeighbours(nextCell);
+        checkEnemyArea(nextCell, step);
         currentCheckers.set(currentCheckers.indexOf(currentCell), nextCell);
         return nextCell;
     }
@@ -51,4 +56,5 @@ public abstract class Checker {
 
     abstract String getNextMove(String nextCell) throws WhiteCellException, BusyCellException, ErrorException, InvalidMoveException;
     abstract String getOppositeChecker(String nextCell, int step) throws InvalidMoveException, ErrorException;
+    abstract void checkEnemyArea(String nextCell, int step) throws InvalidMoveException;
 }

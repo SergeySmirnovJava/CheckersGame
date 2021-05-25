@@ -5,16 +5,20 @@ import com.checkers.exceptions.ErrorException;
 import com.checkers.exceptions.InvalidMoveException;
 import com.checkers.exceptions.WhiteCellException;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
 public class QueenChecker extends Checker  {
-    private RegularChecker regularChecker;
-    private String result;
+    Map<Integer, String> currentCheckersMap = new LinkedHashMap<>();
+    Map<Integer, String> oppositeCheckersMap = new LinkedHashMap<>();
     public QueenChecker(List<String> currentCheckers, List<String> oppositeCheckers,
                                                             String currentCell, boolean side) {
         super(currentCheckers, oppositeCheckers, currentCell, side);
+        currentCheckers.forEach(s -> currentCheckersMap.put(s.hashCode(), s));
+        oppositeCheckers.forEach(s -> oppositeCheckersMap.put(s.hashCode(), s));
     }
 
     @Override
@@ -49,6 +53,11 @@ public class QueenChecker extends Checker  {
             default:
                 throw new InvalidMoveException();
         }
+    }
+
+    @Override
+    void checkEnemyArea(String nextCell, int step) {
+
     }
 
     @Override
