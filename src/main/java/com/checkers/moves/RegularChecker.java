@@ -1,18 +1,13 @@
 package com.checkers.moves;
 
 import com.checkers.exceptions.BusyCellException;
-import com.checkers.exceptions.ErrorException;
 import com.checkers.exceptions.InvalidMoveException;
-import com.checkers.exceptions.WhiteCellException;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
+
 
 public class RegularChecker  extends Checker{
-    private String nextCell;
     List<Integer> currentCheckersHash = new ArrayList<>();
     List<Integer> oppositeCheckersHash = new ArrayList<>();
     public RegularChecker(List<String> currentCheckers, List<String> oppositeCheckers,
@@ -55,11 +50,4 @@ public class RegularChecker  extends Checker{
         }
     }
 
-
-    @Override
-    String getNextMove(String nextCell) throws WhiteCellException, BusyCellException,
-                                                    ErrorException, InvalidMoveException {
-
-        return nextCell;
-    }
 }

@@ -3,22 +3,16 @@ package com.checkers.moves;
 import com.checkers.exceptions.BusyCellException;
 import com.checkers.exceptions.ErrorException;
 import com.checkers.exceptions.InvalidMoveException;
-import com.checkers.exceptions.WhiteCellException;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-
+import java.util.*;
 public class QueenChecker extends Checker  {
-    Map<Integer, String> currentCheckersMap = new LinkedHashMap<>();
-    Map<Integer, String> oppositeCheckersMap = new LinkedHashMap<>();
+    List<Integer> currentCheckersHash = new ArrayList<>();
+    List<Integer> oppositeCheckersHash = new ArrayList<>();
     public QueenChecker(List<String> currentCheckers, List<String> oppositeCheckers,
                                                             String currentCell, boolean side) {
         super(currentCheckers, oppositeCheckers, currentCell, side);
-        currentCheckers.forEach(s -> currentCheckersMap.put(s.hashCode(), s));
-        oppositeCheckers.forEach(s -> oppositeCheckersMap.put(s.hashCode(), s));
+        currentCheckers.forEach(s -> currentCheckersHash.add(s.hashCode()));
+        oppositeCheckers.forEach(s -> oppositeCheckersHash.add(s.hashCode()));
     }
 
     @Override
@@ -56,13 +50,17 @@ public class QueenChecker extends Checker  {
     }
 
     @Override
-    void checkEnemyArea(String nextCell, int step) {
-
+    void checkEnemyArea(String nextCell, int step) throws InvalidMoveException {
+        for(String hashOpposite : oppositeCheckers){
+            int offsetHash = (hashOpposite.hashCode() - nextCell.hashCode());
+            if(Math.abs(offsetHash % 32)  == 0  || Math.abs(offsetHash % 30) == 0){
+                offsetHash = offsetHash % 30;
+                if(!oppositeCheckersHash.contains(hashOpposite.hashCode() + (30 + offsetHash)) &&
+                            currentCheckersHash.contains(hashOpposite.hashCode() + (30 + offsetHash))){
+                    throw  new InvalidMoveException();
+                }
+            }
+        }
     }
 
-    @Override
-    String getNextMove(String nextCell) throws WhiteCellException, BusyCellException, ErrorException, InvalidMoveException {
-
-        return null;
-    }
 }
