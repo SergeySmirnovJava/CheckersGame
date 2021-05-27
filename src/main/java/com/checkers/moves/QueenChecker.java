@@ -8,9 +8,8 @@ import java.util.*;
 public class QueenChecker extends Checker  {
     List<Integer> currentCheckersHash = new ArrayList<>();
     List<Integer> oppositeCheckersHash = new ArrayList<>();
-    public QueenChecker(List<String> currentCheckers, List<String> oppositeCheckers,
-                                                            String currentCell, boolean side) {
-        super(currentCheckers, oppositeCheckers, currentCell, side);
+    public QueenChecker(ArrayList<String> currentCheckers, ArrayList<String> oppositeCheckers) {
+        super(currentCheckers, oppositeCheckers);
         currentCheckers.forEach(s -> currentCheckersHash.add(s.hashCode()));
         oppositeCheckers.forEach(s -> oppositeCheckersHash.add(s.hashCode()));
     }

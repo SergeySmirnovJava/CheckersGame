@@ -4,15 +4,15 @@ import com.checkers.exceptions.BusyCellException;
 import com.checkers.exceptions.InvalidMoveException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 public class RegularChecker  extends Checker{
     List<Integer> currentCheckersHash = new ArrayList<>();
     List<Integer> oppositeCheckersHash = new ArrayList<>();
-    public RegularChecker(List<String> currentCheckers, List<String> oppositeCheckers,
-                                                                String currentCell, boolean side) {
-        super(currentCheckers, oppositeCheckers, currentCell, side);
+    public RegularChecker(ArrayList<String> currentCheckers, ArrayList<String> oppositeCheckers) {
+        super(currentCheckers, oppositeCheckers);
         currentCheckers.forEach(s -> currentCheckersHash.add(s.hashCode()));
         oppositeCheckers.forEach(s -> oppositeCheckersHash.add(s.hashCode()));
     }
