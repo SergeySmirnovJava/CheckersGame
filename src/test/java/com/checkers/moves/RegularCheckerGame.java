@@ -3,13 +3,14 @@ package com.checkers.moves;
 import com.checkers.exceptions.BusyCellException;
 import com.checkers.exceptions.ErrorException;
 import com.checkers.exceptions.InvalidMoveException;
+import com.checkers.exceptions.WhiteCellException;
 import org.junit.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RegularCheckerTest {
-    RegularChecker regularChecker;
+public class RegularCheckerGame {
+    CheckerGame regularChecker;
     ArrayList<String> whiteCells;
     ArrayList<String> blackCells;
     ArrayList<String> expectedCell;
@@ -23,48 +24,86 @@ public class RegularCheckerTest {
     public void setup(){
         whiteCells = new ArrayList<>(Arrays.asList("a1", "a3", "b2", "c1", "c3", "d2", "e1", "e3", "f2", "g1", "g3", "h2"));
         blackCells = new ArrayList<>(Arrays.asList("a7", "b6", "b8", "c7", "d6", "d8", "e7", "f6", "f8", "g7", "h6", "h8"));
-        regularChecker = new RegularChecker(whiteCells, blackCells);
+        regularChecker = new CheckerGame(whiteCells, blackCells);
     }
 
+    @Test
+    public void swapCheckersSide(){
+        String[] expectedCurrentCells = new String[]{"a7", "b6", "b8", "c7", "d6", "d8", "e7", "f6", "f8", "g7", "h6", "h8"};
+        regularChecker.swapCheckers();
+        Assert.assertArrayEquals(expectedCurrentCells, whiteCells.toArray());
+    }
 
     @Test(expected = ErrorException.class)
-    public void whiteCheckerIsContain() throws ErrorException {
-        regularChecker.setCurrentCell("d4");
+    public void setCurrentCell() throws ErrorException {
+        regularChecker.setCurrentCell("a7");
     }
 
     @Test(expected = BusyCellException.class)
-    public void checkAreaNextCell() throws BusyCellException, InvalidMoveException {
-        regularChecker.checkRegularMoves("a3");
+    public void currentContainsNext() throws ErrorException, BusyCellException, InvalidMoveException {
+        regularChecker.setCurrentCell("a1");
+        regularChecker.checkMove("b2");
     }
 
     @Test(expected = InvalidMoveException.class)
-    public void checkEnemyChecker() throws BusyCellException, InvalidMoveException {
-        regularChecker.checkRegularMoves("a7");
+    public void oppositeContainsNext() throws ErrorException, BusyCellException, InvalidMoveException {
+        regularChecker.setCurrentCell("a1");
+        regularChecker.checkMove("a7");
     }
 
     @Test(expected = InvalidMoveException.class)
-    public void checkQueenMove() throws BusyCellException, InvalidMoveException {
-        ArrayList<String> whiteCellsTemp = new ArrayList<>(Arrays.asList("a1", "a7"));
-        ArrayList<String> blackCellsTemp = new ArrayList<>(Arrays.asList("h8", "g7"));
-        RegularChecker regularCheckerTemp = new RegularChecker(whiteCellsTemp, blackCellsTemp);
-        regularCheckerTemp.checkRegularMoves("b8");
+    public void nextCellIsQueen() throws ErrorException, BusyCellException, InvalidMoveException {
+        ArrayList<String> tempWhiteCheckers = new ArrayList<>(Arrays.asList("a7", "b6"));
+        ArrayList<String> tempBlackCheckers = new ArrayList<>(Arrays.asList("h6", "f6"));
+        CheckerGame tempRegular = new CheckerGame(tempWhiteCheckers, tempBlackCheckers);
+        tempRegular.setCurrentCell("a7");
+        tempRegular.checkMove("b8");
     }
-    @Test
-    public void swapWhiteCheckers(){
-        String[] expectedSwap = {"a7", "b6", "b8", "c7", "d6", "d8", "e7", "f6", "f8", "g7", "h6", "h8"};
-        regularChecker.swapCheckers();
-        Assert.assertArrayEquals(expectedSwap, whiteCells.toArray());
+
+    @Test(expected = InvalidMoveException.class)
+    public void cellIsQueen() throws ErrorException, BusyCellException, InvalidMoveException {
+        ArrayList<String> tempWhiteCheckers = new ArrayList<>(Arrays.asList("A7", "b6"));
+        ArrayList<String> tempBlackCheckers = new ArrayList<>(Arrays.asList("h6", "f6"));
+        CheckerGame tempRegular = new CheckerGame(tempWhiteCheckers, tempBlackCheckers);
+        tempRegular.setCurrentCell("A7");
+        tempRegular.checkMove("b8");
+    }
+
+    @Test(expected = WhiteCellException.class)
+    public void regularCellNotWhite() throws ErrorException, WhiteCellException {
+        regularChecker.setCurrentCell("a1");
+        regularChecker.getNeighbours("a2");
     }
 
     @Test
-    public void swapBlackCheckers(){
-        String[] expectedSwap = {"a1", "a3", "b2", "c1", "c3", "d2", "e1", "e3", "f2", "g1", "g3", "h2"};
-        regularChecker.swapCheckers();
-        Assert.assertArrayEquals(expectedSwap, blackCells.toArray());
+    public void correctNextMove() throws ErrorException, WhiteCellException {
+        int expectedArea = "b4".hashCode() - "a3".hashCode();
+        regularChecker.setCurrentCell("a3");
+        int resultArea = regularChecker.getNeighbours("b4");
+        Assert.assertEquals(expectedArea, resultArea);
     }
 
+    @Test(expected = ErrorException.class)
+    public void regularLongMove() throws ErrorException, WhiteCellException {
+        regularChecker.setCurrentCell("a3");
+        regularChecker.getNeighbours("c5");
+    }
 
     @Test
+    public void noEnemyInArea() throws ErrorException, InvalidMoveException {
+        regularChecker.setCurrentCell("a3");
+       // regularChecker.checkEnemyArea("b4");
+    }
+
+    @Test(expected = InvalidMoveException.class)
+    public void enemyInArea() throws ErrorException, BusyCellException, InvalidMoveException {
+        ArrayList<String> tempWhiteCheckers = new ArrayList<>(Arrays.asList("e3", "b6"));
+        ArrayList<String> tempBlackCheckers = new ArrayList<>(Arrays.asList("d4", "f6"));
+        CheckerGame tempRegular = new CheckerGame(tempWhiteCheckers, tempBlackCheckers);
+        tempRegular.setCurrentCell("e3");
+       // tempRegular.checkEnemyArea("f4");
+    }
+
 
     @AfterClass
     public static void endTest(){
