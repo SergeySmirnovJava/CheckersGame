@@ -64,6 +64,8 @@ public class RegularCheckerTest {
     }
 
 
+    @Test
+
     @AfterClass
     public static void endTest(){
         System.out.println("All tests passed successfully!");

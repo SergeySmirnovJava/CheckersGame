@@ -1,51 +1,45 @@
 package com.checkers.game;
 
-import com.checkers.exceptions.BusyCellException;
-import com.checkers.exceptions.ErrorException;
-import com.checkers.exceptions.InvalidMoveException;
+import com.checkers.moves.CheckerGame;
 
-import com.checkers.exceptions.WhiteCellException;
-import com.checkers.moves.Checker;
-import com.checkers.moves.QueenChecker;
-import com.checkers.moves.RegularChecker;
-
-import java.util.List;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MovesValidator {
-    private final Pattern movePattern;
-    private final String  moveSyntax;
-    private final List<String> currentCheckers;
-    private final List<String> oppositeCheckers;
-    private Checker checker;
+    private ArrayList<String> whiteCheckers;
+    private ArrayList<String> blackCheckers;
+    private CheckerGame checker;
+    private final Pattern startPositions;
+    private Matcher matchPositions;
 
-    public MovesValidator(List<String> currentPositions, List<String> oppositePositions){
-        currentCheckers = currentPositions;
-        oppositeCheckers = oppositePositions;
-        moveSyntax = "([a-hA-h])([1-8])";
-        movePattern = Pattern.compile(moveSyntax);
+    public MovesValidator(String whiteCheckers, String blackCheckers){
+        startPositions = Pattern.compile("[a-hA-h][1-8]");
+        matchPositions = startPositions.matcher(whiteCheckers);
+        while (matchPositions.find()){
+            this.whiteCheckers.add(whiteCheckers.substring(matchPositions.start(), matchPositions.end()));
+        }
+        matchPositions = startPositions.matcher(blackCheckers);
+        while (matchPositions.find()){
+            this.blackCheckers.add(blackCheckers.substring(matchPositions.start(), matchPositions.end()));
+        }
+        checker = new CheckerGame(this.whiteCheckers, this.blackCheckers);
     }
 
-    public void handleMove(String moves, boolean side) throws Exception {
-        Matcher moveMatcher = movePattern.matcher(moveSyntax);
-        System.out.println("move");
-        if(moveMatcher.find()) {
-            String currentPosition = moves.substring(moveMatcher.start(), moveMatcher.end());
-            if (moves.matches("A-H")) {
-                checker = new QueenChecker(currentCheckers, oppositeCheckers, currentPosition, side);
+    public void handleMove(String moves) throws Exception {
+        matchPositions = startPositions.matcher(moves);
+        if(matchPositions.find()) {
+            checker.setCurrentCell(moves.substring(matchPositions.start(), matchPositions.end()));
+            if (moves.contains("-")) {
+                if(matchPositions.find()) {
+                    checker.regularMove(moves.substring(matchPositions.start(), matchPositions.end()));
+                }
             } else {
-                checker = new RegularChecker(currentCheckers, oppositeCheckers, currentPosition, side);
+                while(matchPositions.find()) {
+                    checker.attackMove(moves.substring(matchPositions.start(), matchPositions.end()));
+                }
             }
         }
-        while (moveMatcher.find()){
-            String nextCell = moves.substring(moveMatcher.start(), moveMatcher.end());
-            if(moves.contains("-")){
-                checker.regularMove(nextCell);
-            }
-            else{
-                checker.attackMove(nextCell);
-            }
-        }
+        checker.swapCheckers();
     }
 }
