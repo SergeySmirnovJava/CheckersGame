@@ -7,7 +7,6 @@ public class SyntaxValidator {
 
     public String handleMove(String moves) throws Exception {
         if(moves.matches(syntaxPattern)){
-            System.out.println("move");
             return moves;
         }
         else {
