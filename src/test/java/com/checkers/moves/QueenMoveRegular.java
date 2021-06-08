@@ -71,6 +71,22 @@ public class QueenCheckerGame {
         Assert.assertEquals(expectResult, result);
     }
 
+    @Test
+    public void freeArea() throws ErrorException {
+        boolean expectResult = false;
+        queenChecker.setCurrentCell("A3");
+        boolean result = queenChecker.checkEnemyArea();
+        Assert.assertEquals(expectResult, result);
+    }
+
+    @Test
+    public void regularMove() throws ErrorException, WhiteCellException, BusyCellException, InvalidMoveException {
+        ArrayList<String> expectedCells = new ArrayList<>(Arrays.asList("a1", "D6", "b2", "E3"));
+        queenChecker.setCurrentCell("A3");
+        queenChecker.regularMove("D6");
+        Assert.assertArrayEquals(expectedCells.toArray(), whiteCells.toArray());
+    }
+
     @AfterClass
     public static void endTest(){
         System.out.println("All tests passed successfully!");

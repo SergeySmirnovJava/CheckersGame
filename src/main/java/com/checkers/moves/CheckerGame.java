@@ -28,6 +28,7 @@ public class CheckerGame {
             ErrorException, WhiteCellException {
         checkMove(nextCell);
         int step = getNeighbours(nextCell);
+        if(nextCell.matches("[a-h][1-8]") && (Math.abs(step) > 32)) throw new ErrorException("Wrong move");
         int stepOffset = step % 30;
         if(checkEnemyArea()) throw new InvalidMoveException();
         currentCheckers.set(currentCheckers.indexOf(currentCell), nextCell);
@@ -38,7 +39,14 @@ public class CheckerGame {
         checkMove(nextCell);
         int step = getNeighbours(nextCell);
         if(Math.abs(step) < 60) throw new InvalidMoveException();
-
+        int tempHash  = nextCell.hashCode();
+        while (tempHash - (step/2) != currentCell.hashCode()){
+            tempHash -= (step/2);
+            int finalTempHash = tempHash;
+            if(!oppositeCheckers.removeIf(s -> s.hashCode() == finalTempHash)) throw new ErrorException("No enemy checker");
+        }
+        currentCheckers.set(currentCheckers.indexOf(currentCell), nextCell);
+        currentCell = nextCell;
     }
 
     public void setCurrentCell(String currentCell) throws ErrorException {
@@ -52,10 +60,8 @@ public class CheckerGame {
         int j = 1;
 
         while(j < 64){
-            System.out.println(tempStep);
             for (int i = -1; i < 1; i += 2){
                 tempHash = this.currentCell.toLowerCase().hashCode() + i * tempStep;
-                //System.out.println(tempHash);
                 if(hashOpposite.contains(tempHash)){
                     if((tempHash >= 3088 && tempHash <= 3248) && (tempHash % 56 != 0 && tempHash % 18 != 0)){
                         if(!hashOpposite.contains(tempHash + i * tempStep) &&
@@ -107,7 +113,6 @@ public class CheckerGame {
     public int getNeighbours(String nextCell) throws ErrorException, WhiteCellException {
         int localArea = nextCell.hashCode() - currentCell.hashCode();
         if((Math.abs(localArea) % 30) == 0 || (Math.abs(localArea) % 32) == 0){
-            if(nextCell.matches("[a-h][1-8]") && (Math.abs(localArea) > 32)) throw new ErrorException("Wrong move");
             return localArea;
         }
         else {
