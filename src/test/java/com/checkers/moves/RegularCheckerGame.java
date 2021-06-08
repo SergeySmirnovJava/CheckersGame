@@ -13,7 +13,6 @@ public class RegularCheckerGame {
     CheckerGame regularChecker;
     ArrayList<String> whiteCells;
     ArrayList<String> blackCells;
-    ArrayList<String> expectedCell;
 
     @BeforeClass
     public static void greetTest(){
@@ -91,19 +90,30 @@ public class RegularCheckerGame {
 
     @Test
     public void noEnemyInArea() throws ErrorException, InvalidMoveException {
+        boolean expectedMove = false;
         regularChecker.setCurrentCell("a3");
-       // regularChecker.checkEnemyArea("b4");
+        boolean move = regularChecker.checkEnemyArea("b4");
+        Assert.assertEquals(expectedMove, move);
     }
 
-    @Test(expected = InvalidMoveException.class)
+    @Test
     public void enemyInArea() throws ErrorException, BusyCellException, InvalidMoveException {
         ArrayList<String> tempWhiteCheckers = new ArrayList<>(Arrays.asList("e3", "b6"));
         ArrayList<String> tempBlackCheckers = new ArrayList<>(Arrays.asList("d4", "f6"));
         CheckerGame tempRegular = new CheckerGame(tempWhiteCheckers, tempBlackCheckers);
         tempRegular.setCurrentCell("e3");
-       // tempRegular.checkEnemyArea("f4");
+        boolean expectedMove = true;
+        boolean move = tempRegular.checkEnemyArea("f4");
+        Assert.assertEquals(expectedMove, move);
     }
 
+    @Test
+    public void regularMove() throws ErrorException, WhiteCellException, BusyCellException, InvalidMoveException {
+        ArrayList<String> expectedCells = new ArrayList<>(Arrays.asList("a1", "b4", "b2", "c1", "c3", "d2", "e1", "e3", "f2", "g1", "g3", "h2"));
+        regularChecker.setCurrentCell("a3");
+        regularChecker.regularMove("b4");
+        Assert.assertArrayEquals(expectedCells.toArray(), whiteCells.toArray());
+    }
 
     @AfterClass
     public static void endTest(){
