@@ -74,8 +74,9 @@ public class CheckerGame {
 
     public void checkMove(String nextCell) throws BusyCellException, InvalidMoveException {
         int tempSide = side ? 8 : 1;
-        if(currentCheckers.contains(nextCell)) throw new BusyCellException();
-        if(oppositeCheckers.contains(nextCell)) throw new InvalidMoveException();
+        if(this.currentCell.matches("[A-H][1-8]") && nextCell.matches("[a-h][1-8]")) throw new InvalidMoveException();
+        if(currentCheckers.contains(nextCell.toLowerCase())) throw new BusyCellException();
+        if(oppositeCheckers.contains(nextCell.toLowerCase())) throw new InvalidMoveException();
         if(nextCell.matches("[a-h]" + tempSide)) throw new InvalidMoveException();
     }
 
