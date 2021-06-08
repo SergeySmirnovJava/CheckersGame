@@ -9,7 +9,7 @@ import org.junit.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RegularCheckerGame {
+public class CheckerMoveRegular {
     CheckerGame regularChecker;
     ArrayList<String> whiteCells;
     ArrayList<String> blackCells;
@@ -82,11 +82,7 @@ public class RegularCheckerGame {
         Assert.assertEquals(expectedArea, resultArea);
     }
 
-    @Test(expected = ErrorException.class)
-    public void regularLongMove() throws ErrorException, WhiteCellException {
-        regularChecker.setCurrentCell("a3");
-        regularChecker.getNeighbours("c5");
-    }
+
 
     @Test
     public void noEnemyInArea() throws ErrorException, InvalidMoveException {
@@ -115,6 +111,11 @@ public class RegularCheckerGame {
         Assert.assertArrayEquals(expectedCells.toArray(), whiteCells.toArray());
     }
 
+    @Test(expected = ErrorException.class)
+    public void regularLongMove() throws ErrorException, WhiteCellException, BusyCellException, InvalidMoveException {
+        regularChecker.setCurrentCell("a3");
+        regularChecker.regularMove("c5");
+    }
     @AfterClass
     public static void endTest(){
         System.out.println("All tests passed successfully!");

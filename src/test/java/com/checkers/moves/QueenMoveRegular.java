@@ -9,7 +9,7 @@ import org.junit.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class QueenCheckerGame {
+public class QueenMoveRegular {
     CheckerGame queenChecker;
     ArrayList<String> whiteCells;
     ArrayList<String> blackCells;
