@@ -92,7 +92,7 @@ public class RegularCheckerGame {
     public void noEnemyInArea() throws ErrorException, InvalidMoveException {
         boolean expectedMove = false;
         regularChecker.setCurrentCell("a3");
-        boolean move = regularChecker.checkEnemyArea("b4");
+        boolean move = regularChecker.checkEnemyArea();
         Assert.assertEquals(expectedMove, move);
     }
 
@@ -103,7 +103,7 @@ public class RegularCheckerGame {
         CheckerGame tempRegular = new CheckerGame(tempWhiteCheckers, tempBlackCheckers);
         tempRegular.setCurrentCell("e3");
         boolean expectedMove = true;
-        boolean move = tempRegular.checkEnemyArea("f4");
+        boolean move = tempRegular.checkEnemyArea();
         Assert.assertEquals(expectedMove, move);
     }
 
