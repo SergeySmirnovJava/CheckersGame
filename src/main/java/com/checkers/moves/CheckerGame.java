@@ -20,8 +20,8 @@ public class CheckerGame {
     public CheckerGame(ArrayList<String> currentCheckers, ArrayList<String> oppositeCheckers){
         this.currentCheckers = currentCheckers;
         this.oppositeCheckers = oppositeCheckers;
-        this.currentCheckers.forEach(s -> hashCurrent.add(s.hashCode()));
-        this.oppositeCheckers.forEach(s -> hashOpposite.add(s.hashCode()));
+        this.currentCheckers.forEach(s -> hashCurrent.add(s.toLowerCase().hashCode()));
+        this.oppositeCheckers.forEach(s -> hashOpposite.add(s.toLowerCase().hashCode()));
     }
 
     public void regularMove(String nextCell) throws BusyCellException, InvalidMoveException,
@@ -29,7 +29,7 @@ public class CheckerGame {
         checkMove(nextCell);
         int step = getNeighbours(nextCell);
         int stepOffset = step % 30;
-        if(checkEnemyArea(nextCell)) throw new InvalidMoveException();
+        if(checkEnemyArea()) throw new InvalidMoveException();
         currentCheckers.set(currentCheckers.indexOf(currentCell), nextCell);
     }
 
@@ -46,27 +46,34 @@ public class CheckerGame {
         this.currentCell = currentCell;
     }
 
-    public boolean checkEnemyArea(String nextCell) throws InvalidMoveException {
+    public boolean checkEnemyArea(){
         int tempStep = 30;
         int tempHash;
         int j = 1;
-        while(j < 8){
+
+        while(j < 64){
+            System.out.println(tempStep);
             for (int i = -1; i < 1; i += 2){
-                tempHash = this.currentCell.hashCode() + i * tempStep;
+                tempHash = this.currentCell.toLowerCase().hashCode() + i * tempStep;
+                //System.out.println(tempHash);
                 if(hashOpposite.contains(tempHash)){
                     if((tempHash >= 3088 && tempHash <= 3248) && (tempHash % 56 != 0 && tempHash % 18 != 0)){
                         if(!hashOpposite.contains(tempHash + i * tempStep) &&
                                     !hashCurrent.contains(tempHash + i * tempStep)) {
-                            return true;
+                            if(hashCurrent.contains(tempHash - i * tempStep)){
+                                if(this.currentCell.toLowerCase().hashCode() == (tempHash - i * tempStep)) {
+                                    return true;
+                                }
+                            }
                         }
                     }
                 }
             }
-            if(tempStep == 32 && this.currentCell.matches("[a-h]")){
+            if(tempStep == 32 && this.currentCell.matches("[a-h][1-8]")){
                 return false;
             }
-            tempStep = tempStep % 30 == 0 ? 32 * j : 30 * j;
             j++;
+            tempStep = tempStep % 30 == 0 ? 32 * (j - 1) : 30 * j;
         }
         return false;
     }
