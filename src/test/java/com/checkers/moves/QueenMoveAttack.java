@@ -12,7 +12,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class CheckerMoveAttack {
+import static org.junit.Assert.*;
+
+public class QueenMoveAttack {
     CheckerGame regularChecker;
     ArrayList<String> whiteCells;
     ArrayList<String> blackCells;
@@ -24,30 +26,19 @@ public class CheckerMoveAttack {
     }
     @Before
     public void setup(){
-        whiteCells = new ArrayList<>(Arrays.asList("b4", "d4", "f4", "g1"));
+        whiteCells = new ArrayList<>(Arrays.asList("B4", "d4", "f4", "g1"));
         blackCells = new ArrayList<>(Arrays.asList("c5", "c7", "e5", "g7", "h8"));
         regularChecker = new CheckerGame(whiteCells, blackCells);
     }
 
     @Test
     public void attack() throws ErrorException, WhiteCellException, BusyCellException, InvalidMoveException {
-        ArrayList<String> expectedCurrent = new ArrayList<>(Arrays.asList("d6", "d4", "f4", "g1"));
+        ArrayList<String> expectedCurrent = new ArrayList<>(Arrays.asList("F8", "d4", "f4", "g1"));
         ArrayList<String> expectedOpposite = new ArrayList<>(Arrays.asList("c7", "e5", "g7", "h8"));
-        regularChecker.setCurrentCell("b4");
-        regularChecker.attackMove("d6");
+        regularChecker.setCurrentCell("B4");
+        regularChecker.attackMove("F8");
         Assert.assertArrayEquals(expectedCurrent.toArray(), whiteCells.toArray());
         Assert.assertArrayEquals(expectedOpposite.toArray(), blackCells.toArray());
     }
 
-    @Test(expected = InvalidMoveException.class)
-    public void regularMove() throws ErrorException, WhiteCellException, BusyCellException, InvalidMoveException {
-        regularChecker.setCurrentCell("b4");
-        regularChecker.attackMove("c5");
-    }
-
-    @Test(expected = InvalidMoveException.class)
-    public void falseAttack() throws ErrorException, WhiteCellException, BusyCellException, InvalidMoveException {
-        regularChecker.setCurrentCell("g1");
-        regularChecker.attackMove("e3");
-    }
 }
