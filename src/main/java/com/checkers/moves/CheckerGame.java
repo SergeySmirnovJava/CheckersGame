@@ -14,6 +14,7 @@ public class CheckerGame {
     ArrayList<String> oppositeCheckers;
     ArrayList<Integer> hashCurrent = new ArrayList<>();
     ArrayList<Integer> hashOpposite = new ArrayList<>();
+
     String currentCell;
     boolean side = true;
 
@@ -29,8 +30,8 @@ public class CheckerGame {
         checkMove(nextCell);
         int step = getNeighbours(nextCell);
         if(nextCell.matches("[a-h][1-8]") && (Math.abs(step) > 32)) throw new ErrorException("Wrong move");
-        int stepOffset = step % 30;
         if(checkEnemyArea()) throw new InvalidMoveException();
+        hashCurrent.set(hashCurrent.indexOf(currentCell.toLowerCase().hashCode()), nextCell.toLowerCase().hashCode());
         currentCheckers.set(currentCheckers.indexOf(currentCell), nextCell);
     }
 
@@ -39,12 +40,23 @@ public class CheckerGame {
         checkMove(nextCell);
         int step = getNeighbours(nextCell);
         if(Math.abs(step) < 60) throw new InvalidMoveException();
-        int tempHash  = nextCell.hashCode();
-        while (tempHash - (step/2) != currentCell.hashCode()){
-            tempHash -= (step/2);
-            int finalTempHash = tempHash;
-            if(!oppositeCheckers.removeIf(s -> s.hashCode() == finalTempHash)) throw new ErrorException("No enemy checker");
+        int side = step < 0 ? -1 : 1;
+        step = (step % 30 == 0 ? 30 : 32) * side;
+        int tempHash  = nextCell.toLowerCase().hashCode();
+        int count = 0;
+        int finalTempHash = 0;
+        while (tempHash != currentCell.toLowerCase().hashCode()){
+            tempHash -= (step);
+            if(hashOpposite.contains(tempHash)){
+                finalTempHash = tempHash;
+                count++;
+            }
         }
+        if(count != 1) throw new InvalidMoveException();
+        int finalTempHash1 = finalTempHash;
+        oppositeCheckers.removeIf(s -> s.hashCode() == finalTempHash1);
+        hashOpposite.removeIf(h -> h.equals(finalTempHash1));
+        hashCurrent.set(hashCurrent.indexOf(currentCell.toLowerCase().hashCode()), nextCell.toLowerCase().hashCode());
         currentCheckers.set(currentCheckers.indexOf(currentCell), nextCell);
         currentCell = nextCell;
     }
@@ -87,27 +99,36 @@ public class CheckerGame {
 
     public void checkMove(String nextCell) throws BusyCellException, InvalidMoveException {
         int tempSide = side ? 8 : 1;
-        if(this.currentCell.matches("[A-H][1-8]") && nextCell.matches("[a-h][1-8]")) throw new InvalidMoveException();
-        if(currentCheckers.contains(nextCell.toLowerCase())) throw new BusyCellException();
-        if(oppositeCheckers.contains(nextCell.toLowerCase())) throw new InvalidMoveException();
+        if(currentCell.matches("[A-H][1-8]") && nextCell.matches("[a-h][1-8]")) throw new InvalidMoveException();
+        if(hashCurrent.contains(nextCell.toLowerCase().hashCode())) throw new BusyCellException();
+        if(hashOpposite.contains(nextCell.toLowerCase().hashCode())) throw new InvalidMoveException();
         if(nextCell.matches("[a-h]" + tempSide)) throw new InvalidMoveException();
     }
 
     public void swapCheckers(){
         this.side = !side;
         ArrayList<String> tempCheckers = new ArrayList<>(currentCheckers);
+        ArrayList<Integer> tempHash = new ArrayList<>(hashCurrent);
         Iterator<String> iterator = currentCheckers.iterator();
+        Iterator<Integer> hashIterator = hashCurrent.iterator();
         while (iterator.hasNext()){
             iterator.next();
             iterator.remove();
+            hashIterator.next();
+            hashIterator.remove();
         }
         currentCheckers.addAll(oppositeCheckers);
+        hashCurrent.addAll(hashOpposite);
         iterator = oppositeCheckers.iterator();
+        hashIterator = hashOpposite.iterator();
         while (iterator.hasNext()){
             iterator.next();
             iterator.remove();
+            hashIterator.next();
+            hashIterator.remove();
         }
         oppositeCheckers.addAll(tempCheckers);
+        hashOpposite.addAll(tempHash);
     }
 
     public int getNeighbours(String nextCell) throws ErrorException, WhiteCellException {
@@ -118,5 +139,17 @@ public class CheckerGame {
         else {
             throw new WhiteCellException();
         }
+    }
+    @Override
+    public String toString(){
+        StringBuilder results = new StringBuilder();
+        for(String currentLines : currentCheckers){
+            results.append(currentLines).append(" ");
+        }
+        results.append("\n");
+        for(String oppositeLines : oppositeCheckers){
+            results.append(oppositeLines).append(" ");
+        }
+        return results.toString();
     }
 }
