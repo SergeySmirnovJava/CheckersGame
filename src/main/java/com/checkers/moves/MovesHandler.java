@@ -32,6 +32,17 @@ public class MovesHandler {
 
     }
 
+    public void attackMovement(String currentCell, String nextCell) throws WhiteCellException,
+            BusyCellException, InvalidMoveException {
+        moveHandle(currentCell, nextCell);
+        if(Math.abs(stepLocal) > 60) throw new InvalidMoveException();
+        int tempHashOdds = nextCell.toLowerCase().hashCode() - currentCell.toLowerCase().hashCode();
+    }
+
+    public boolean isAnyCheckers(int hashOdds, int hashNextCell){
+   
+    }
+
     public void moveHandle(String currentCell, String nextCell) throws BusyCellException, InvalidMoveException,
             WhiteCellException {
         currentCheckerCell = currentCell;
@@ -40,7 +51,7 @@ public class MovesHandler {
         if(!isNextMoveQueen(nextCell)) throw new InvalidMoveException();
         if(!isMoveWhiteCell(nextCell)) throw new WhiteCellException();
     }
-    
+
     public boolean isNextMoveQueen(String nextCell){
         int tempCurrentSide = currentCheckerSide ? 8 : 1;
         if(currentCheckerCell.matches("[A-H][1-8]") && nextCell.matches("[a-h][1-8]")) return false;
@@ -58,14 +69,12 @@ public class MovesHandler {
             return false;
         }
     }
+    // 3088 3248
+    public boolean isPossibleAttack(String nextCell){
+        int boundArea = nextCell.matches("[a-h][1-8]") ? 1 : 8;
+        int checkPosition = 30;
 
-    public boolean isEnemyInArea(String nextCell){
-        int boundArea = nextCell.matches("[a-h][1-8]") ? 4 : 64;
-        for (int i = 0; i < boundArea; i++){
-            for(int j = -1; j < 1; j += 2){
-
-            }
-        }
         return false;
     }
+
 }
