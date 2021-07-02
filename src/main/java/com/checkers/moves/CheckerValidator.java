@@ -34,7 +34,8 @@ public class CheckerValidator {
     public String handleMovement(String movement) throws ErrorException {
         if(!movement.matches(syntaxChecker)) throw new ErrorException("Wrong syntax");
         Matcher matcherMoveType = patternMoveType.matcher(movement);
-        
+
+
         return null;
     }
 }
