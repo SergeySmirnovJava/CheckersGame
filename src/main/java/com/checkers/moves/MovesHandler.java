@@ -6,6 +6,7 @@ import com.checkers.exceptions.WhiteCellException;
 import com.checkers.game.MovesValidator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 
 public class MovesHandler {
@@ -36,12 +37,49 @@ public class MovesHandler {
             BusyCellException, InvalidMoveException {
         moveHandle(currentCell, nextCell);
         if(Math.abs(stepLocal) > 60) throw new InvalidMoveException();
-        int tempHashOdds = nextCell.toLowerCase().hashCode() - currentCell.toLowerCase().hashCode();
+        int enemyCheckerHash = getEnemyCheckerHash(nextCell);
+        hashOppositeCells.remove(enemyCheckerHash);
+        oppositeCells.removeIf(s -> s.toLowerCase().hashCode() == enemyCheckerHash);
+        currentCells.set(currentCells.indexOf(currentCell), nextCell);
+        hashCurrentCells.set(hashCurrentCells.indexOf(currentCell.toLowerCase().hashCode()),
+                                                                nextCell.toLowerCase().hashCode());
+        swapSides();
     }
 
-    public boolean isAnyCheckers(int hashOdds, int hashNextCell){
-   
+    public int getEnemyCheckerHash(String nextCell) throws BusyCellException {
+        int tempCount = 0;
+        int hashOfEnemyChecker = 0;
+        int tempStepCell = nextCell.toLowerCase().hashCode() - currentCheckerCell.toLowerCase().hashCode();
+        tempStepCell = (tempStepCell/Math.abs(tempStepCell)) * ((Math.abs(tempStepCell) % 32 == 0) ? 32 : 30);
+        Integer tempCellHash = nextCell.toLowerCase().hashCode();
+        Integer tempCurrentCellHash = currentCheckerCell.toLowerCase().hashCode() + tempStepCell;
+        while (!tempCellHash.equals(tempCurrentCellHash)){
+            tempCellHash = tempCellHash - tempStepCell;
+            if(hashCurrentCells.contains(tempCellHash) || hashOppositeCells.contains(tempCellHash)){
+                if(hashOppositeCells.contains(tempCellHash)){
+                    hashOfEnemyChecker = tempCellHash;
+                }
+                tempCount++;
+            }
+        }
+        if (tempCount != 1) throw new BusyCellException();
+        return hashOfEnemyChecker;
     }
+
+    public void swapSides(){
+        ArrayList<String> tempCurrentCells = new ArrayList<>(currentCells);
+        ArrayList<Integer> tempHashCurrent = new ArrayList<>(hashCurrentCells);
+        currentCells.clear();
+        hashCurrentCells.clear();
+        currentCells.addAll(oppositeCells);
+        hashCurrentCells.addAll(hashOppositeCells);
+
+        oppositeCells.clear();
+        hashOppositeCells.clear();
+        oppositeCells.addAll(tempCurrentCells);
+        hashOppositeCells.addAll(tempHashCurrent);
+    }
+
 
     public void moveHandle(String currentCell, String nextCell) throws BusyCellException, InvalidMoveException,
             WhiteCellException {
