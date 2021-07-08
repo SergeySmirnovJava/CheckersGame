@@ -28,14 +28,16 @@ public class MovesHandler {
 
     public void regularMovement(String currentCell, String nextCell) throws WhiteCellException,
             BusyCellException, InvalidMoveException {
-        moveHandle(currentCell, nextCell);
+        setCurrentCells(currentCell);
+        moveHandle(nextCell);
         if (nextCell.matches("[a-h][1-8]") && Math.abs(stepLocal) > 32) throw new InvalidMoveException();
 
     }
 
     public void attackMovement(String currentCell, String nextCell) throws WhiteCellException,
             BusyCellException, InvalidMoveException {
-        moveHandle(currentCell, nextCell);
+        setCurrentCells(currentCell);
+        moveHandle(nextCell);
         if(Math.abs(stepLocal) > 60) throw new InvalidMoveException();
         int enemyCheckerHash = getEnemyCheckerHash(nextCell);
         hashOppositeCells.remove(enemyCheckerHash);
@@ -80,20 +82,24 @@ public class MovesHandler {
         hashOppositeCells.addAll(tempHashCurrent);
     }
 
-
-    public void moveHandle(String currentCell, String nextCell) throws BusyCellException, InvalidMoveException,
-            WhiteCellException {
+    public void setCurrentCells(String currentCell){
         currentCheckerCell = currentCell;
+    }
+
+
+    public boolean moveHandle(String nextCell) throws InvalidMoveException,
+            WhiteCellException {
         if(hashCurrentCells.contains(nextCell.toLowerCase().hashCode()) ||
-                hashOppositeCells.contains(nextCell.toLowerCase().hashCode())) throw new BusyCellException();
+                hashOppositeCells.contains(nextCell.toLowerCase().hashCode())) return false;
         if(!isNextMoveQueen(nextCell)) throw new InvalidMoveException();
         if(!isMoveWhiteCell(nextCell)) throw new WhiteCellException();
+        return true;
     }
 
     public boolean isNextMoveQueen(String nextCell){
         int tempCurrentSide = currentCheckerSide ? 8 : 1;
         if(currentCheckerCell.matches("[A-H][1-8]") && nextCell.matches("[a-h][1-8]")) return false;
-        return (nextCell.matches("[a-h]" + tempCurrentSide));
+        return !nextCell.matches("[a-h]" + tempCurrentSide);
     }
 
     // numbers 30 and 32 are calculated empirically
