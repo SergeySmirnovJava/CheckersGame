@@ -1,6 +1,7 @@
 package com.checkers.moves;
 
 import com.checkers.exceptions.BusyCellException;
+import com.checkers.exceptions.ErrorException;
 import com.checkers.exceptions.InvalidMoveException;
 import com.checkers.exceptions.WhiteCellException;
 import com.checkers.game.MovesValidator;
@@ -27,25 +28,27 @@ public class MovesHandler {
     }
 
     public void regularMovement(String currentCell, String nextCell) throws WhiteCellException,
-            BusyCellException, InvalidMoveException {
+            BusyCellException, InvalidMoveException, ErrorException {
         setCurrentCells(currentCell);
         moveHandle(nextCell);
         if (nextCell.matches("[a-h][1-8]") && Math.abs(stepLocal) > 32) throw new InvalidMoveException();
-
+        if(isPossibleAttack(nextCell)) throw new InvalidMoveException();
+        hashCurrentCells.set(hashCurrentCells.indexOf(currentCell.toLowerCase().hashCode()),
+                                                                        nextCell.toLowerCase().hashCode());
+        currentCells.set(currentCells.indexOf(currentCell), nextCell);
     }
 
-    public void attackMovement(String currentCell, String nextCell) throws WhiteCellException,
+    public void attackMovement(String nextCell) throws WhiteCellException,
             BusyCellException, InvalidMoveException {
-        setCurrentCells(currentCell);
         moveHandle(nextCell);
-        if(Math.abs(stepLocal) > 60) throw new InvalidMoveException();
+        if(!isMoveWhiteCell(nextCell)) throw new WhiteCellException();
+        if(Math.abs(stepLocal) < 60) throw new InvalidMoveException();
         int enemyCheckerHash = getEnemyCheckerHash(nextCell);
-        hashOppositeCells.remove(enemyCheckerHash);
+        hashOppositeCells.remove((Integer) enemyCheckerHash);
         oppositeCells.removeIf(s -> s.toLowerCase().hashCode() == enemyCheckerHash);
-        currentCells.set(currentCells.indexOf(currentCell), nextCell);
-        hashCurrentCells.set(hashCurrentCells.indexOf(currentCell.toLowerCase().hashCode()),
+        currentCells.set(currentCells.indexOf(getCurrentCells()), nextCell);
+        hashCurrentCells.set(hashCurrentCells.indexOf(getCurrentCells().toLowerCase().hashCode()),
                                                                 nextCell.toLowerCase().hashCode());
-        swapSides();
     }
 
     public int getEnemyCheckerHash(String nextCell) throws BusyCellException {
@@ -63,6 +66,7 @@ public class MovesHandler {
                 }
                 tempCount++;
             }
+
         }
         if (tempCount != 1) throw new BusyCellException();
         return hashOfEnemyChecker;
@@ -82,10 +86,11 @@ public class MovesHandler {
         hashOppositeCells.addAll(tempHashCurrent);
     }
 
-    public void setCurrentCells(String currentCell){
+    public void setCurrentCells(String currentCell) throws ErrorException {
+        if(!currentCells.contains(currentCell)) throw new ErrorException("No such checker");
         currentCheckerCell = currentCell;
     }
-
+    public String getCurrentCells(){return currentCheckerCell;}
 
     public boolean moveHandle(String nextCell) throws InvalidMoveException,
             WhiteCellException {
@@ -98,7 +103,7 @@ public class MovesHandler {
 
     public boolean isNextMoveQueen(String nextCell){
         int tempCurrentSide = currentCheckerSide ? 8 : 1;
-        if(currentCheckerCell.matches("[A-H][1-8]") && nextCell.matches("[a-h][1-8]")) return false;
+        if(getCurrentCells().matches("[A-H][1-8]") && nextCell.matches("[a-h][1-8]")) return false;
         return !nextCell.matches("[a-h]" + tempCurrentSide);
     }
 
@@ -115,9 +120,32 @@ public class MovesHandler {
     }
     // 3088 3248
     public boolean isPossibleAttack(String nextCell){
-        int boundArea = nextCell.matches("[a-h][1-8]") ? 1 : 8;
-        int checkPosition = 30;
+        int rightDirection = 30;
+        int leftDirection = 32;
+        int searchingArea = nextCell.matches("[A-H]") ? 3 : 1;
+        for(int i = 0; i < searchingArea; i++){
+            for(int j = -1; j < 2; j+=2){
+                int tempRightDirection = getCurrentCells().toLowerCase().hashCode() + j * rightDirection;
+                int tempLeftDirection = getCurrentCells().toLowerCase().hashCode() + j * leftDirection;
+                if(hashOppositeCells.contains(tempRightDirection) && searchLocalArea(tempRightDirection)) return true;
+                if(hashOppositeCells.contains(tempLeftDirection) && searchLocalArea(tempLeftDirection)) return true;
+            }
+            rightDirection += 30;
+            leftDirection +=32;
+        }
+        return false;
+    }
 
+    public boolean searchLocalArea(int hashSide){
+        int stepDirection = (getCurrentCells().toLowerCase().hashCode() - hashSide) > 0 ? -1 : 1;
+        int stepOffset  =   (Math.abs(getCurrentCells().toLowerCase().hashCode() - hashSide) % 32 == 0) ? 32 : 30;
+        if(hashSide > 3088 && hashSide < 3248){
+            int tempDirection = stepDirection * stepOffset;
+             if(!hashOppositeCells.contains(hashSide + tempDirection) &&
+                    !hashCurrentCells.contains(hashSide + tempDirection)){
+                 return true;
+            }
+        }
         return false;
     }
 
