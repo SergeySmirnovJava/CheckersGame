@@ -15,7 +15,7 @@ import java.util.Collections;
 
 import static org.junit.Assert.*;
 
-public class CheckerHandlerRegularTest {
+public class CheckerHandlerTest {
     ArrayList<String> whiteCheckers = new ArrayList<>();
     ArrayList<String> blackCheckers = new ArrayList<>();
     MovesHandler movesHandler = new MovesHandler(whiteCheckers, blackCheckers);
@@ -84,7 +84,7 @@ public class CheckerHandlerRegularTest {
     @Test
     public void testNextMove() throws InvalidMoveException, WhiteCellException, ErrorException {
         whiteCheckers = new ArrayList<>(Arrays.asList("a7", "b6", "c5"));
-        blackCheckers = new ArrayList<>(Arrays.asList("c7"));
+        blackCheckers = new ArrayList<>(Collections.singletonList("c7"));
         MovesHandler moveHandler = new MovesHandler(whiteCheckers, blackCheckers);
         boolean expectResult = false;
         moveHandler.setCurrentCells("b6");
@@ -99,7 +99,7 @@ public class CheckerHandlerRegularTest {
     @Test
     public void testSwapSides(){
         whiteCheckers = new ArrayList<>(Arrays.asList("a7", "b6", "c5"));
-        blackCheckers = new ArrayList<>(Arrays.asList("c7"));
+        blackCheckers = new ArrayList<>(Collections.singletonList("c7"));
         MovesHandler moveHandler = new MovesHandler(whiteCheckers, blackCheckers);
         ArrayList<String> expectCurrentCheckers = new ArrayList<>(Arrays.asList("c7"));
         ArrayList<String> expectOppositeCheckers = new ArrayList<>(Arrays.asList("a7", "b6", "c5"));
@@ -111,7 +111,7 @@ public class CheckerHandlerRegularTest {
     @Test
     public void testLocalArea() throws ErrorException {
         whiteCheckers = new ArrayList<>(Arrays.asList("a7", "b6", "c5"));
-        blackCheckers = new ArrayList<>(Arrays.asList("c7"));
+        blackCheckers = new ArrayList<>(Collections.singletonList("c7"));
         MovesHandler movesHandler = new MovesHandler(whiteCheckers, blackCheckers);
         boolean nextCell;
 
@@ -140,7 +140,7 @@ public class CheckerHandlerRegularTest {
     @Test
     public void testPossibleAttack() throws ErrorException {
         whiteCheckers = new ArrayList<>(Arrays.asList("a7", "b6", "c5"));
-        blackCheckers = new ArrayList<>(Arrays.asList("c7"));
+        blackCheckers = new ArrayList<>(Collections.singletonList("c7"));
         MovesHandler movesHandler = new MovesHandler(whiteCheckers, blackCheckers);
         boolean nextCell;
 
@@ -156,7 +156,7 @@ public class CheckerHandlerRegularTest {
     @Test
     public void testEnemyHash() throws ErrorException, BusyCellException {
         whiteCheckers = new ArrayList<>(Arrays.asList("a7", "b6", "c5", "d4"));
-        blackCheckers = new ArrayList<>(Arrays.asList("d6"));
+        blackCheckers = new ArrayList<>(Collections.singletonList("d6"));
         MovesHandler movesHandler = new MovesHandler(whiteCheckers, blackCheckers);
         int enemyHash;
         movesHandler.setCurrentCells("c5");
@@ -167,7 +167,7 @@ public class CheckerHandlerRegularTest {
     @Test
     public void testAttackMove() throws ErrorException, WhiteCellException, BusyCellException, InvalidMoveException {
         whiteCheckers = new ArrayList<>(Arrays.asList("a7", "b6", "c5", "d4"));
-        blackCheckers = new ArrayList<>(Arrays.asList("d6"));
+        blackCheckers = new ArrayList<>(Collections.singletonList("d6"));
         MovesHandler movesHandler = new MovesHandler(whiteCheckers, blackCheckers);
 
         movesHandler.setCurrentCells("c5");
@@ -180,6 +180,18 @@ public class CheckerHandlerRegularTest {
         Assert.assertArrayEquals(expectBlackCheckers.toArray(), blackCheckers.toArray());
     }
 
+    @Test
+    public void testRegularMove() throws ErrorException, WhiteCellException, BusyCellException, InvalidMoveException {
+        whiteCheckers = new ArrayList<>(Arrays.asList("a7", "b6", "c5", "d4"));
+        blackCheckers = new ArrayList<>(Collections.singletonList("d6"));
+        MovesHandler movesHandler = new MovesHandler(whiteCheckers, blackCheckers);
+
+        movesHandler.setCurrentCells("d4");
+        movesHandler.regularMovement("e5");
+
+        ArrayList<String> expectedWhiteCheckers = new ArrayList<>(Arrays.asList("a7", "b6", "c5", "e5"));
+        Assert.assertArrayEquals(expectedWhiteCheckers.toArray(), whiteCheckers.toArray());
+    }
 
     @AfterClass
     public static void endTest(){
